@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.weather.service.UserService;
 import com.example.weather.util.HttpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,13 +25,15 @@ import java.io.IOException;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Value(value = "${weather.key}")
+    private String KEY = null;
 
     @GetMapping("/newUser")
     public Integer newUser(@RequestParam(value = "name")String name,
                            @RequestParam(value = "target")Long target,
                            @RequestParam(value = "type")Integer type,
                            @RequestParam(value = "city")String city) throws IOException {
-        String cityResult = HttpUtil.get(String.format("https://geoapi.qweather.com/v2/city/lookup?location=%s&key=99c16aa017844e5fa4bd6531c41516ab",city));
+        String cityResult = HttpUtil.get(String.format("https://geoapi.qweather.com/v2/city/lookup?location=%s&key=%s",city,KEY));
         System.out.println(cityResult);
         Long locate = Long.parseLong(JSONObject.parseObject(cityResult).getJSONArray("location").getJSONObject(0).getString("id"));
         return userService.newUser(name,target,type,locate);

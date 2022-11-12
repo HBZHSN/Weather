@@ -18,6 +18,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -39,20 +40,23 @@ import java.util.List;
 public class Weather {
 
     private static Logger logger = LoggerFactory.getLogger(Weather.class);
-    public static final String KEY = "99c16aa017844e5fa4bd6531c41516ab";
-    public static final String SESSION = "hV2eBIK1";
-    public static final String TEXT = "Plain";
+    private static final String TEXT = "Plain";
+
+    @Value(value = "${weather.domain}")
+    private String DOMAIN = null;
+    @Value(value = "${weather.session}")
+    private String SESSION = null;
+    @Value(value = "${weather.key}")
+    private String KEY = null;
+
 
     @Autowired
     private UserService userService;
     @Autowired
     private WeatherService weatherService;
 
-    public static List<WeatherHour> getTodayWeather(Long cityCode) throws IOException {
-        HttpGet get = new HttpGet(String.format("https://devapi.qweather.com/v7/weather/24h?location=%s&key=%s", cityCode, KEY));
-        HttpClient client = HttpClientBuilder.create().build();
-        HttpResponse response = client.execute(get);
-        String result = EntityUtils.toString(response.getEntity());
+    public List<WeatherHour> getTodayWeather(Long cityCode) throws IOException {
+        String result = HttpUtil.get(String.format("https://devapi.qweather.com/v7/weather/24h?location=%s&key=%s", cityCode, KEY));
         logger.info(String.format("getTodayWeather:locate:%d,result:%s", cityCode, result));
         return JSONArray.parseArray(JSONObject.parseObject(result).getString("hourly"), WeatherHour.class);
     }
@@ -82,28 +86,20 @@ public class Weather {
             msg.setSessionKey(SESSION);
             msg.setMessageChain(items);
 
-            if (userweather.getTarget() == 1) {
-                HttpUtil.post("http://124.71.143.134:8081/sendFriendMessage", msg);
+            if (userweather.getType() == 1) {
+                String result = HttpUtil.post(DOMAIN + "/sendFriendMessage", msg);
+                logger.info("SentFriendMessage: " + result);
             } else {
-                HttpUtil.post("http://124.71.143.134:8081/sendGroupMessage", msg);
+                String result = HttpUtil.post(DOMAIN + "/sendGroupMessage", msg);
+                logger.info("SentGroupMessage: " + result);
             }
 
-            logger.info(String.format("sendWeatherMessage:user:%s,locate:%d,message:%s", userweather.getName(), userweather.getLocate(), msg));
+            logger.info(String.format("sendWeatherMessage:domain:%s,user:%s,locate:%d,message:%s", DOMAIN, userweather.getName(), userweather.getLocate(), msg));
         }
     }
 
     public static void main(String[] args) throws IOException {
-        List<WeatherHour> weatherHours = getTodayWeather(101210101L);
-        Message message = new Message();
-        message.setSessionKey("hV2eBIK1");
-        message.setTarget(1149983457L);
-        MessageItem messageItem = new MessageItem();
-        messageItem.setType("Plain");
-        messageItem.setText(weatherHours.toString());
-        List<MessageItem> messageItemList = new ArrayList<>();
-        messageItemList.add(messageItem);
-        message.setMessageChain(messageItemList);
-        HttpUtil.post("http://124.71.143.134:8081/sendFriendMessage", message);
+
     }
 
 }

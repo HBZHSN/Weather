@@ -6,6 +6,7 @@ import com.example.weather.util.HttpUtil;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,11 +25,14 @@ import java.io.IOException;
 public class User {
 
     private Logger logger = LoggerFactory.getLogger(User.class);
-    public static final String SESSION = "hV2eBIK1";
+    @Value(value = "${weather.session}")
+    private String SESSION = null;
+    @Value(value = "${weather.domain}")
+    private String DOMAIN = null;
 
     @Scheduled(cron = "0/10 * * * * ?")
     public Long countMessage() throws IOException {
-        JSONObject result = JSONObject.parseObject(HttpUtil.get("http://124.71.143.134:8081/countMessage?sessionKey="+SESSION));
+        JSONObject result = JSONObject.parseObject(HttpUtil.get(DOMAIN+"/countMessage?sessionKey="+SESSION));
         logger.info(result.toJSONString());
         return result.getLong("data");
     }

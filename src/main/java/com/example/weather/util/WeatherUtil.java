@@ -3,10 +3,7 @@ package com.example.weather.util;
 import com.alibaba.fastjson.JSONArray;
 import com.example.weather.VO.WeatherHour;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -94,21 +91,20 @@ public class WeatherUtil {
     };
 
     public static String checkWeather(String weatherJSON) {
-        StringBuilder result = new StringBuilder("未来24小时天气情况：\n");
+        StringBuilder result = new StringBuilder("!!!此条为测试信息!!!\n未来24小时天气情况：\n");
         List<WeatherHour> weatherHours = JSONtoWeather(weatherJSON);
         List<Double> temps = weatherHours.stream().map(WeatherHour::getTemp).sorted().collect(Collectors.toList());
-        List<Long> icons = weatherHours.stream().map(WeatherHour::getIcon).collect(Collectors.toList());
 
         result.append(String.format("气温：%.0f度-%.0f度\n", temps.get(0), temps.get(23)));
-        Long first = -1L;
+        String first = "-";
         String firstTime = "";
         for (WeatherHour weatherHour : weatherHours) {
-            if(first == -1L){
+            if(Objects.equals(first, "-")){
                 firstTime = weatherHour.getFxTime().substring(11, 16);
             }
-            if (!Objects.equals(weatherHour.getIcon(), first)) {
-                result.append(firstTime).append("—").append(weatherHour.getFxTime().substring(11, 16)).append("：").append(ICON_MAP.get(weatherHour.getIcon())).append("\n");
-                first = weatherHour.getIcon();
+            if (!Objects.equals(weatherHour.getText(), first)) {
+                result.append(firstTime).append("—").append(weatherHour.getFxTime().substring(11, 16)).append("：").append(weatherHour.getText()).append("\n");
+                first = weatherHour.getText();
                 firstTime = weatherHour.getFxTime().substring(11, 16);
             }
         }
