@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.weather.mapper.UserMapper">
+
+    <insert id="newUser">
+        INSERT INTO `user_weather` (name, target, type, locate)
+        values(#{name}, #{target}, #{type}, #{locate})
+    </insert>
+
+    <select id="getUserWeatherById" resultType="com.example.weather.VO.UserWeather">
+        SELECT * FROM `user_weather` WHERE id=#{id}
+    </select>
+
+    <select id="getUserWeather" resultType="com.example.weather.VO.UserWeather">
+        SELECT * FROM `user_weather`
+    </select>
+
+    <select id="getAllLocate" resultType="java.lang.Long">
+        SELECT distinct `locate` from `user_weather`
+    </select>
+
+</mapper>

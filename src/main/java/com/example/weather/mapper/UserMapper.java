@@ -1,0 +1,25 @@
+package com.example.weather.mapper;
+
+import com.example.weather.VO.UserWeather;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * Created with IntelliJ IDEA.
+ *
+ * @description：
+ * @author： hanxu
+ * @create： 2022/11/11 22:47
+ */
+@Mapper
+public interface UserMapper {
+    Integer newUser(String name,Long target,Integer type,Long locate);
+
+    List<UserWeather> getUserWeather();
+
+    UserWeather getUserWeatherById(Long id);
+
+    List<Long> getAllLocate();
+}
