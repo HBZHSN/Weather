@@ -10,11 +10,6 @@ import com.example.weather.service.UserService;
 import com.example.weather.service.WeatherService;
 import com.example.weather.util.HttpUtil;
 import com.example.weather.util.WeatherUtil;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +44,6 @@ public class Weather {
     @Value(value = "${weather.key}")
     private String KEY = null;
 
-
     @Autowired
     private UserService userService;
     @Autowired
@@ -61,7 +55,7 @@ public class Weather {
         return JSONArray.parseArray(JSONObject.parseObject(result).getString("hourly"), WeatherHour.class);
     }
 
-    @Scheduled(cron = "0 5 0,21 * * ?")
+    @Scheduled(cron = "0 5 6,21 * * ?")
     public void getWeather() throws IOException {
         List<Long> locates = userService.getAllLocate();
         for (Long locate : locates) {
@@ -78,7 +72,7 @@ public class Weather {
             MessageItem item = new MessageItem();
             item.setType(TEXT);
             String weatherJSON = weatherService.getTodayWeatherByLocate(userweather.getLocate()).getWeather();
-            item.setText(WeatherUtil.checkWeather(weatherJSON));
+            item.setText(WeatherUtil.buildWeatherString(weatherJSON));
             items.add(item);
 
             Message msg = new Message();
