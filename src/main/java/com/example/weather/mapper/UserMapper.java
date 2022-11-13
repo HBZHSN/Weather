@@ -15,11 +15,15 @@ import java.util.List;
  */
 @Mapper
 public interface UserMapper {
-    Integer newUser(String name,Long target,Integer type,Long locate);
+    Integer newUser(String name, Long target, Integer type, Long locate);
 
     List<UserWeather> getUserWeather();
 
     UserWeather getUserWeatherById(Long id);
 
     List<Long> getAllLocate();
+
+    Integer countByTarget(Long target, Integer type);
+
+    void deleteByTarget(Long target, Integer type);
 }

@@ -21,11 +21,12 @@ public class LocateWeather {
     String weather;
     Timestamp time;
     List<WeatherHour> weatherHours;
-    public void HoursToJSON(){
+
+    public void HoursToJSON() {
         this.weather = JSON.toJSONString(this.weatherHours);
     }
 
-    public List<WeatherHour> JSONtoWeather(String JSON){
-        return JSONArray.parseArray(JSON,WeatherHour.class);
+    public List<WeatherHour> JSONtoWeather(String JSON) {
+        return JSONArray.parseArray(JSON, WeatherHour.class);
     }
 }

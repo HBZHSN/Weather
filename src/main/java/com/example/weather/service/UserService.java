@@ -1,10 +1,14 @@
 package com.example.weather.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.example.weather.VO.UserWeather;
 import com.example.weather.mapper.UserMapper;
+import com.example.weather.util.HttpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -16,22 +20,31 @@ import java.util.List;
  */
 @Service
 public class UserService {
+    @Value(value = "${weather.key}")
+    private String KEY = null;
+
     @Autowired
     private UserMapper userMapper;
 
-    public Integer newUser(String name,Long target,Integer type,Long locate){
+
+    public Integer newUser(String name, Long target, Integer type, String city) throws IOException {
+        if (userMapper.countByTarget(target, type) == 1) {
+            userMapper.deleteByTarget(target,type);
+        }
+        String cityResult = HttpUtil.get(String.format("https://geoapi.qweather.com/v2/city/lookup?location=%s&key=%s", city, KEY));
+        Long locate = Long.parseLong(JSONObject.parseObject(cityResult).getJSONArray("location").getJSONObject(0).getString("id"));
         return userMapper.newUser(name, target, type, locate);
     }
 
-    public UserWeather getUserWeatherById(Long id){
+    public UserWeather getUserWeatherById(Long id) {
         return userMapper.getUserWeatherById(id);
     }
 
-    public List<UserWeather> getUserWeather(){
+    public List<UserWeather> getUserWeather() {
         return userMapper.getUserWeather();
     }
 
-    public List<Long> getAllLocate(){
+    public List<Long> getAllLocate() {
         return userMapper.getAllLocate();
     }
 

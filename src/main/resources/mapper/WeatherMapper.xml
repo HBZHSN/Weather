@@ -9,9 +9,11 @@
     </insert>
 
     <select id="getTodayWeatherByLocate" resultType="com.example.weather.VO.LocateWeather">
-        SELECT * FROM `locate_weather`
-        WHERE `locate`=#{locate}
-        AND `time` <![CDATA[>=]]> #{time}
-        order by id desc limit 1
+        SELECT *
+        FROM `locate_weather`
+        WHERE `locate` = #{locate}
+          AND `time` <![CDATA[>=]]> #{time}
+        order by id desc
+        limit 1
     </select>
 </mapper>

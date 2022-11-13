@@ -91,6 +91,32 @@ public class Weather {
             logger.info(String.format("sendWeatherMessage:domain:%s,user:%s,locate:%d,message:%s", DOMAIN, userweather.getName(), userweather.getLocate(), msg));
         }
     }
+//    @Scheduled(cron = "0/10 * * * * ?")
+//    public void sendWeatherTest() throws IOException {
+//        UserWeather userweather = userService.getUserWeatherById(9L);
+//        List<MessageItem> items = new ArrayList<>();
+//        MessageItem item = new MessageItem();
+//        item.setType(TEXT);
+//        String weatherJSON = weatherService.getTodayWeatherByLocate(userweather.getLocate()).getWeather();
+//        item.setText(WeatherUtil.buildWeatherString(weatherJSON));
+//        items.add(item);
+//
+//        Message msg = new Message();
+//        msg.setTarget(userweather.getTarget());
+//        msg.setSessionKey(SESSION);
+//        msg.setMessageChain(items);
+//
+//        if (userweather.getType() == 1) {
+//            String result = HttpUtil.post(DOMAIN + "/sendFriendMessage", msg);
+//            logger.info("SentFriendMessage: " + result);
+//        } else {
+//            String result = HttpUtil.post(DOMAIN + "/sendGroupMessage", msg);
+//            logger.info("SentGroupMessage: " + result);
+//        }
+//
+//        logger.info(String.format("sendWeatherMessage:domain:%s,user:%s,locate:%d,message:%s", DOMAIN, userweather.getName(), userweather.getLocate(), msg));
+//
+//    }
 
     public static void main(String[] args) throws IOException {
 

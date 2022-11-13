@@ -29,14 +29,11 @@ public class UserController {
     private String KEY = null;
 
     @GetMapping("/newUser")
-    public Integer newUser(@RequestParam(value = "name")String name,
-                           @RequestParam(value = "target")Long target,
-                           @RequestParam(value = "type")Integer type,
-                           @RequestParam(value = "city")String city) throws IOException {
-        String cityResult = HttpUtil.get(String.format("https://geoapi.qweather.com/v2/city/lookup?location=%s&key=%s",city,KEY));
-        System.out.println(cityResult);
-        Long locate = Long.parseLong(JSONObject.parseObject(cityResult).getJSONArray("location").getJSONObject(0).getString("id"));
-        return userService.newUser(name,target,type,locate);
+    public Integer newUser(@RequestParam(value = "name") String name,
+                           @RequestParam(value = "target") Long target,
+                           @RequestParam(value = "type") Integer type,
+                           @RequestParam(value = "city") String city) throws IOException {
+        return userService.newUser(name, target, type, city);
     }
 
 }

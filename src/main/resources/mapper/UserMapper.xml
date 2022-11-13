@@ -5,19 +5,38 @@
 
     <insert id="newUser">
         INSERT INTO `user_weather` (name, target, type, locate)
-        values(#{name}, #{target}, #{type}, #{locate})
+        values (#{name}, #{target}, #{type}, #{locate})
     </insert>
 
+    <delete id="deleteByTarget">
+        DELETE
+        FROM `user_weather`
+        WHERE `target` = #{target}
+          AND `type` = #{type}
+    </delete>
+
     <select id="getUserWeatherById" resultType="com.example.weather.VO.UserWeather">
-        SELECT * FROM `user_weather` WHERE id=#{id}
+        SELECT *
+        FROM `user_weather`
+        WHERE id = #{id}
     </select>
 
     <select id="getUserWeather" resultType="com.example.weather.VO.UserWeather">
-        SELECT * FROM `user_weather`
+        SELECT *
+        FROM `user_weather`
     </select>
 
     <select id="getAllLocate" resultType="java.lang.Long">
-        SELECT distinct `locate` from `user_weather`
+        SELECT distinct `locate`
+        from `user_weather`
     </select>
+
+    <select id="countByTarget" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM `user_weather`
+        WHERE `target` = #{target}
+          AND `type` = #{type}
+    </select>
+
 
 </mapper>

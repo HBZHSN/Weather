@@ -97,7 +97,7 @@ public class WeatherUtil {
 
         result.append(String.format("气温：%.0f度-%.0f度\n", temps.get(0), temps.get(23)));
         String flag = weatherHours.get(0).getText();
-        String firstTime = weatherHours.get(0).getFxTime().substring(11,16);
+        String firstTime = weatherHours.get(0).getFxTime().substring(11, 16);
         Boolean nextDay = false;
         for (int i = 0; i < weatherHours.size(); i++) {
             WeatherHour weatherHour = weatherHours.get(i);
@@ -112,21 +112,10 @@ public class WeatherUtil {
             }
         }
 
-        if(weatherJSON.contains("雨")){
+        if (weatherJSON.contains("雨")) {
             result.append("今日有雨，出门记得带伞。");
-        }else if(weatherJSON.contains("雪")){
+        } else if (weatherJSON.contains("雪")) {
             result.append("今日有雪，出门玩雪吧！");
-        }
-        return result.toString();
-    }
-
-    public static String checkWeather(String weatherString){
-        StringBuilder result = new StringBuilder(weatherString);
-        if(weatherString.contains("雨")){
-            result.append("今日有雨，出门记得带伞。\n");
-        }
-        if(weatherString.contains("雪")){
-            result.append("今日有雪，出门玩雪吧！\n");
         }
         return result.toString();
     }

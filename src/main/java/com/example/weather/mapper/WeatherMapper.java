@@ -14,7 +14,7 @@ import java.sql.Timestamp;
  */
 @Mapper
 public interface WeatherMapper {
-    public Integer newWeather(Long locate,String weather);
+    public Integer newWeather(Long locate, String weather);
 
     public LocateWeather getTodayWeatherByLocate(Long locate, Timestamp time);
 
