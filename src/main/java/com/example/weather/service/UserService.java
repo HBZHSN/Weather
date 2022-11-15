@@ -48,4 +48,8 @@ public class UserService {
         return userMapper.getAllLocate();
     }
 
+    public List<Long> getTargetsByLocate(Long locate){
+        return userMapper.getTargetsByLocate(locate);
+    }
+
 }

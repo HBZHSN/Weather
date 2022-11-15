@@ -28,7 +28,7 @@
 
     <select id="getAllLocate" resultType="java.lang.Long">
         SELECT distinct `locate`
-        from `user_weather`
+        FROM `user_weather`
     </select>
 
     <select id="countByTarget" resultType="java.lang.Integer">
@@ -36,6 +36,12 @@
         FROM `user_weather`
         WHERE `target` = #{target}
           AND `type` = #{type}
+    </select>
+
+    <select id="getTargetsByLocate" resultType="java.lang.Long">
+        SELECT `target`
+        FROM `user_weather`
+        WHERE `locate` = #{locate}
     </select>
 
 

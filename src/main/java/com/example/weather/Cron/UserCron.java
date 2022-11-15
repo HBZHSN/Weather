@@ -2,11 +2,9 @@ package com.example.weather.Cron;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.example.weather.VO.Message;
-import com.example.weather.VO.MessageItem;
 import com.example.weather.service.UserService;
 import com.example.weather.util.HttpUtil;
-import com.example.weather.util.WeatherUtil;
+import com.example.weather.util.MessageUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,9 +26,9 @@ import java.util.Map;
  */
 @Configuration
 @EnableScheduling
-public class User {
+public class UserCron {
 
-    private Logger logger = LoggerFactory.getLogger(User.class);
+    private Logger logger = LoggerFactory.getLogger(UserCron.class);
     @Value(value = "${weather.session}")
     private String SESSION = null;
     @Value(value = "${weather.domain}")
@@ -68,21 +64,8 @@ public class User {
                             String city = text.substring(5);
                             JSONObject sender = resultObject.getJSONObject("sender");
                             logger.info(sender.toJSONString());
-                            logger.info(city);
                             userService.newUser(sender.getString("nickname"), sender.getLong("id"), 1, city);
-                            List<MessageItem> items = new ArrayList<>();
-                            MessageItem item = new MessageItem();
-                            item.setType("Plain");
-                            item.setText(String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city));
-                            items.add(item);
-
-                            Message msg = new Message();
-                            msg.setTarget(sender.getLong("id"));
-                            msg.setSessionKey(SESSION);
-                            msg.setMessageChain(items);
-
-                            String postResult = HttpUtil.post(DOMAIN + "/sendFriendMessage", msg);
-                            logger.info("SentFriendMessage: " + postResult);
+                            MessageUtil.sendPlain(String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city), sender.getLong("id"));
                         }
                     }
                 }

@@ -2,7 +2,6 @@ package com.example.weather.mapper;
 
 import com.example.weather.VO.UserWeather;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -26,4 +25,6 @@ public interface UserMapper {
     Integer countByTarget(Long target, Integer type);
 
     void deleteByTarget(Long target, Integer type);
+
+    List<Long> getTargetsByLocate(Long locate);
 }

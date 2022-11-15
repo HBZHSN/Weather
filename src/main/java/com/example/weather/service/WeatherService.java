@@ -2,7 +2,6 @@ package com.example.weather.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.example.weather.Cron.User;
 import com.example.weather.VO.LocateWeather;
 import com.example.weather.VO.WeatherHour;
 import com.example.weather.mapper.WeatherMapper;

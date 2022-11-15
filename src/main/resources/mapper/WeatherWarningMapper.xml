@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.weather.mapper.WeatherWarningMapper">
+
+    <insert id="newWeatherWarning" parameterType="com.example.weather.VO.WeatherWarning">
+        INSERT INTO `locate_weather_warning` (`id`, `sender`, `pubTime`, `title`, `startTime`, `endTime`, `status`,
+                                              `severity`, `severityColor`, `type`, `typeName`, `urgency`, `certainty`,
+                                              `text`, `related`, `sendStatus`, `locate`)
+        VALUES (#{id}, #{sender}, #{pubTime}, #{title}, #{startTime}, #{endTime}, #{status}, #{severity},
+                #{severityColor}, #{type}, #{typeName}, #{urgency}, #{certainty}, #{text}, #{related}, #{sendStatus},
+                #{locate})
+    </insert>
+
+    <update id="updateWeatherWarning">
+        UPDATE `locate_weather_warning`
+        SET `sendStatus` = 1
+    </update>
+
+    <select id="getWeatherWarningById" resultType="com.example.weather.VO.WeatherWarning">
+        SELECT *
+        FROM `locate_weather_warning`
+        WHERE `id` = #{id}
+          AND `sendstatus` = 0
+    </select>
+
+
+</mapper>
