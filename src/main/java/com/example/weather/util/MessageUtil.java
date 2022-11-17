@@ -49,7 +49,13 @@ public class MessageUtil {
         msg.setSessionKey(SESSION);
         msg.setMessageChain(items);
 
-        String postResult = HttpUtil.post(DOMAIN + "/sendFriendMessage", msg);
+        String postResult = null;
+        try {
+            postResult = HttpUtil.post(DOMAIN + "/sendFriendMessage", msg);
+        } catch (Exception e) {
+            logger.error("Failed to send friend message", e);
+            return;
+        }
         logger.info("SentFriendMessage: " + postResult + "text:" + text);
     }
 }
