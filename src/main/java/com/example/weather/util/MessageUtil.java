@@ -22,9 +22,9 @@ import java.util.List;
 @Component
 public class MessageUtil {
     private static Logger logger = LoggerFactory.getLogger(MessageUtil.class);
-    @Value(value = "${weather.session}")
+//    @Value(value = "${weather.session}")
     private static String SESSION = null;
-    @Value(value = "${weather.domain}")
+//    @Value(value = "${weather.domain}")
     private static String DOMAIN = null;
 
     @Value(value = "${weather.session}")

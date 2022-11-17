@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.weather.VO.*;
+import com.example.weather.service.MessageService;
 import com.example.weather.service.UserService;
 import com.example.weather.service.WeatherService;
 import com.example.weather.service.WeatherWarningService;
@@ -15,8 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +34,9 @@ import java.util.List;
  * @create： 2022/11/11 16:47
  */
 
+@Component
 @Configuration
+@EnableAsync
 @EnableScheduling
 public class WeatherCron {
 
@@ -50,6 +56,8 @@ public class WeatherCron {
     private WeatherService weatherService;
     @Autowired
     private WeatherWarningService weatherWarningService;
+    @Autowired
+    private MessageService messageService;
 
     public List<WeatherHour> getTodayWeather(Long cityCode) throws Exception {
         String result = HttpUtil.get(String.format("https://devapi.qweather.com/v7/weather/24h?location=%s&key=%s", cityCode, KEY));
@@ -63,6 +71,7 @@ public class WeatherCron {
         return JSONArray.parseArray(JSONObject.parseObject(result).getString("warning"), WeatherWarning.class);
     }
 
+    @Async
     @Scheduled(cron = "0 5 6,21 * * ?")
     public void getWeather() throws IOException {
         List<Long> locates = userService.getAllLocate();
@@ -78,6 +87,7 @@ public class WeatherCron {
         }
     }
 
+    @Async
     @Scheduled(cron = "0 0 7,22 * * ?")
     public void sendWeather() throws IOException {
         List<UserWeather> userWeathers = userService.getUserWeather();
@@ -87,13 +97,16 @@ public class WeatherCron {
                 weatherJSON = weatherService.getTodayWeatherByLocate(userweather.getLocate()).getWeather();
             } catch (Exception e) {
                 logger.error("sendWeatherError", e);
-                continue;
+                return;
             }
-            MessageUtil.sendPlain(WeatherUtil.buildWeatherString(weatherJSON), userweather.getTarget());
+            String resultWeather = WeatherUtil.buildWeatherString(weatherJSON);
+            MessageUtil.sendPlain(resultWeather, userweather.getTarget());
+            messageService.newMessage(userweather.getTarget(), userweather.getType(), resultWeather);
         }
     }
 
-    @Scheduled(cron = "0 0/30 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22 * * ?")
+    @Async
+    @Scheduled(cron = "0 0 6,12,18,22 * * ?")
     public void sendWeatherWarning() throws IOException {
         List<Long> locates = userService.getAllLocate();
         for (Long locate : locates) {
@@ -102,7 +115,7 @@ public class WeatherCron {
                 weatherWarnings = getNowWeatherWarning(locate);
             } catch (Exception e) {
                 logger.error("getNowWeatherWarningError", e);
-                continue;
+                return;
             }
             for (WeatherWarning weatherWarning : weatherWarnings) {
                 if (weatherWarning.getId() != null) {
@@ -113,13 +126,21 @@ public class WeatherCron {
                         logger.info(JSON.toJSONString(weatherWarnings));
                         List<Long> targets = userService.getTargetsByLocate(locate);
                         for (Long target : targets) {
-                            MessageUtil.sendPlain(WeatherUtil.buildWeatherWarningString(weatherWarnings), target);
+                            String resultString = WeatherUtil.buildWeatherWarningString(weatherWarnings);
+                            MessageUtil.sendPlain(resultString, target);
+                            messageService.newMessage(target, 1, resultString);
                         }
                     }
                 }
             }
         }
     }
+
+//    @Async
+//    @Scheduled(cron = "0/1 * * * * ? ")
+//    public void test() throws IOException {
+//        MessageUtil.sendPlain(String.format("线程：%s\n时间：%s",Thread.currentThread().getName(),System.currentTimeMillis()),1149983457L);
+//    }
 
     public static void main(String[] args) throws IOException {
     }

@@ -34,6 +34,7 @@ public class HttpUtil {
             httpPost.setConfig(requestConfig);
             HttpResponse response = client.execute(httpPost);
             result = EntityUtils.toString(response.getEntity());
+            client.close();
         } catch (Exception e) {
             throw e;
         }
@@ -49,6 +50,7 @@ public class HttpUtil {
             httpGet.setConfig(requestConfig);
             HttpResponse response = client.execute(httpGet);
             result = EntityUtils.toString(response.getEntity());
+            client.close();
         } catch (Exception e) {
             throw e;
         }

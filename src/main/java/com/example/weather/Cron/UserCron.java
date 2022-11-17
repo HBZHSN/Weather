@@ -2,6 +2,8 @@ package com.example.weather.Cron;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.weather.VO.MessageItem;
+import com.example.weather.service.MessageService;
 import com.example.weather.service.UserService;
 import com.example.weather.util.HttpUtil;
 import com.example.weather.util.MessageUtil;
@@ -13,8 +15,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,19 +36,46 @@ public class UserCron {
     private String SESSION = null;
     @Value(value = "${weather.domain}")
     private String DOMAIN = null;
+    @Value(value = "${weather.verifyKey}")
+    private String VERIFY_KEY = null;
+    @Value(value = "${weather.qq}")
+    private String QQ = null;
+    @Value(value = "${weather.notify}")
+    private String NOTIFY = null;
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private MessageService messageService;
 
     @Scheduled(cron = "0/10 * * * * ?")
     public void dealMessage() throws Exception {
         Long countMessage = null;
         try {
             JSONObject countResult = JSONObject.parseObject(HttpUtil.get(DOMAIN + "/countMessage?sessionKey=" + SESSION));
+            if (countResult.getInteger("code") == 3) {//session失效，临时用一个session发消息
+                Map<String, String> map = new HashMap<>();
+                map.put("verifyKey", VERIFY_KEY);
+                String session = JSONObject.parseObject(HttpUtil.post(DOMAIN + "/verify", map)).getString("session");
+                map.clear();
+                map.put("sessionKey", session);
+                map.put("qq", QQ);
+                HttpUtil.post(DOMAIN + "/bind", map);
+                Map<String,Object> mapMessage = new HashMap<>();
+                mapMessage.put("sessionKey",session);
+                mapMessage.put("target",NOTIFY);
+                List<MessageItem> items = new ArrayList<>();
+                MessageItem item = new MessageItem();
+                item.setText("Session失效，快去看一眼！");
+                item.setType("Plain");
+                items.add(item);
+                mapMessage.put("messageChain",items);
+                HttpUtil.post(DOMAIN+"/sendFriendMessage",mapMessage);
+                System.exit(0);
+            }
             countMessage = countResult.getLong("data");
         } catch (Exception e) {
             logger.error("dealMessageError", e);
-            return;
         }
         if (countMessage != 0) {
             String result = null;
@@ -83,6 +113,7 @@ public class UserCron {
                             logger.info(sender.toJSONString());
                             userService.newUser(sender.getString("nickname"), sender.getLong("id"), 1, city);
                             MessageUtil.sendPlain(String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city), sender.getLong("id"));
+                            messageService.newMessage(sender.getLong("id"), 1, String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city));
                         }
                     }
                 }
