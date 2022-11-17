@@ -51,13 +51,13 @@ public class WeatherCron {
     @Autowired
     private WeatherWarningService weatherWarningService;
 
-    public List<WeatherHour> getTodayWeather(Long cityCode) throws IOException {
+    public List<WeatherHour> getTodayWeather(Long cityCode) throws Exception {
         String result = HttpUtil.get(String.format("https://devapi.qweather.com/v7/weather/24h?location=%s&key=%s", cityCode, KEY));
         logger.info(String.format("getTodayWeather:locate:%d,result:%s", cityCode, result));
         return JSONArray.parseArray(JSONObject.parseObject(result).getString("hourly"), WeatherHour.class);
     }
 
-    public List<WeatherWarning> getNowWeatherWarning(Long cityCode) throws IOException {
+    public List<WeatherWarning> getNowWeatherWarning(Long cityCode) throws Exception {
         String result = HttpUtil.get(String.format("https://devapi.qweather.com/v7/warning/now?key=%s&location=%s", KEY, cityCode));
         logger.info(String.format("getNowWeatherWarning:locate:%d,result:%s", cityCode, result));
         return JSONArray.parseArray(JSONObject.parseObject(result).getString("warning"), WeatherWarning.class);
@@ -67,7 +67,13 @@ public class WeatherCron {
     public void getWeather() throws IOException {
         List<Long> locates = userService.getAllLocate();
         for (Long locate : locates) {
-            List<WeatherHour> weatherHours = getTodayWeather(locate);
+            List<WeatherHour> weatherHours = new ArrayList<>();
+            try {
+                weatherHours = getTodayWeather(locate);
+            } catch (Exception e) {
+                logger.error("getTodayWeatherError", e);
+                return;
+            }
             weatherService.newWeather(locate, weatherHours);
         }
     }
@@ -76,7 +82,13 @@ public class WeatherCron {
     public void sendWeather() throws IOException {
         List<UserWeather> userWeathers = userService.getUserWeather();
         for (UserWeather userweather : userWeathers) {
-            String weatherJSON = weatherService.getTodayWeatherByLocate(userweather.getLocate()).getWeather();
+            String weatherJSON = null;
+            try {
+                weatherJSON = weatherService.getTodayWeatherByLocate(userweather.getLocate()).getWeather();
+            } catch (Exception e) {
+                logger.error("sendWeatherError", e);
+                continue;
+            }
             MessageUtil.sendPlain(WeatherUtil.buildWeatherString(weatherJSON), userweather.getTarget());
         }
     }
@@ -85,7 +97,13 @@ public class WeatherCron {
     public void sendWeatherWarning() throws IOException {
         List<Long> locates = userService.getAllLocate();
         for (Long locate : locates) {
-            List<WeatherWarning> weatherWarnings = getNowWeatherWarning(locate);
+            List<WeatherWarning> weatherWarnings = new ArrayList<>();
+            try {
+                weatherWarnings = getNowWeatherWarning(locate);
+            } catch (Exception e) {
+                logger.error("getNowWeatherWarningError", e);
+                continue;
+            }
             for (WeatherWarning weatherWarning : weatherWarnings) {
                 if (weatherWarning.getId() != null) {
                     weatherWarning.setLocate(locate);
@@ -104,7 +122,6 @@ public class WeatherCron {
     }
 
     public static void main(String[] args) throws IOException {
-
     }
 
 }

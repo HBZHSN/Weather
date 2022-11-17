@@ -38,11 +38,23 @@ public class UserCron {
     private UserService userService;
 
     @Scheduled(cron = "0/10 * * * * ?")
-    public void dealMessage() throws IOException {
-        JSONObject countResult = JSONObject.parseObject(HttpUtil.get(DOMAIN + "/countMessage?sessionKey=" + SESSION));
-        Long countMessage = countResult.getLong("data");
+    public void dealMessage() throws Exception {
+        Long countMessage = null;
+        try {
+            JSONObject countResult = JSONObject.parseObject(HttpUtil.get(DOMAIN + "/countMessage?sessionKey=" + SESSION));
+            countMessage = countResult.getLong("data");
+        } catch (Exception e) {
+            logger.error("dealMessageError", e);
+            return;
+        }
         if (countMessage != 0) {
-            String result = HttpUtil.get(String.format("%s/fetchMessage?sessionKey=%s&count=%s", DOMAIN, SESSION, countMessage));
+            String result = null;
+            try {
+                result = HttpUtil.get(String.format("%s/fetchMessage?sessionKey=%s&count=%s", DOMAIN, SESSION, countMessage));
+            } catch (Exception e) {
+                logger.error("dealMessageError", e);
+                return;
+            }
             JSONArray resultArray = JSONObject.parseObject(result).getJSONArray("data");
             for (int i = 0; i < resultArray.size(); i++) {
                 JSONObject resultObject = resultArray.getJSONObject(i);
@@ -55,7 +67,12 @@ public class UserCron {
                     body.put("groupId", resultObject.getLong("groupId"));
                     body.put("operate", 1);
                     logger.info(body.toString());
-                    HttpUtil.post(DOMAIN + "/resp/newFriendRequestEvent", body);
+                    try {
+                        HttpUtil.post(DOMAIN + "/resp/newFriendRequestEvent", body);
+                    } catch (Exception e) {
+                        logger.error("dealMessageError", e);
+                        return;
+                    }
                 } else if (type.equals("FriendMessage")) {
                     JSONArray messageChain = resultObject.getJSONArray("messageChain");
                     if (messageChain.getJSONObject(1).getString("type").equals("Plain")) {

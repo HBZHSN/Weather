@@ -41,7 +41,7 @@ public class WeatherService {
         return weatherMapper.newWeather(locate, locateWeather.getWeather());
     }
 
-    public LocateWeather getTodayWeatherByLocate(Long locate) throws IOException {
+    public LocateWeather getTodayWeatherByLocate(Long locate) throws Exception {
         Calendar c = Calendar.getInstance();
         if (c.get(Calendar.HOUR_OF_DAY) > 12) {//现在是上午还是下午，因为早上晚上都要发一次天气
             c.set(Calendar.HOUR_OF_DAY, 16);

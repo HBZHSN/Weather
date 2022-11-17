@@ -1,9 +1,12 @@
 package com.example.weather.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.weather.Cron.WeatherCron;
 import com.example.weather.VO.UserWeather;
 import com.example.weather.mapper.UserMapper;
 import com.example.weather.util.HttpUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,8 @@ import java.util.List;
  */
 @Service
 public class UserService {
+    private static Logger logger = LoggerFactory.getLogger(UserService.class);
+
     @Value(value = "${weather.key}")
     private String KEY = null;
 
@@ -27,11 +32,17 @@ public class UserService {
     private UserMapper userMapper;
 
 
-    public Integer newUser(String name, Long target, Integer type, String city) throws IOException {
+    public Integer newUser(String name, Long target, Integer type, String city) {
         if (userMapper.countByTarget(target, type) == 1) {
-            userMapper.deleteByTarget(target,type);
+            userMapper.deleteByTarget(target, type);
         }
-        String cityResult = HttpUtil.get(String.format("https://geoapi.qweather.com/v2/city/lookup?location=%s&key=%s", city, KEY));
+        String cityResult = null;
+        try {
+            cityResult = HttpUtil.get(String.format("https://geoapi.qweather.com/v2/city/lookup?location=%s&key=%s", city, KEY));
+        } catch (Exception e) {
+            logger.error("newUserError", e);
+            return 0;
+        }
         Long locate = Long.parseLong(JSONObject.parseObject(cityResult).getJSONArray("location").getJSONObject(0).getString("id"));
         return userMapper.newUser(name, target, type, locate);
     }
@@ -48,7 +59,7 @@ public class UserService {
         return userMapper.getAllLocate();
     }
 
-    public List<Long> getTargetsByLocate(Long locate){
+    public List<Long> getTargetsByLocate(Long locate) {
         return userMapper.getTargetsByLocate(locate);
     }
 
