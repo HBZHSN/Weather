@@ -26,15 +26,13 @@ public class HttpUtil {
     public static String post(String url, Object body) throws Exception {
         String result = null;
         HttpPost httpPost = new HttpPost();
-        try {
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
             httpPost.setURI(URI.create(url));
             httpPost.setEntity(new StringEntity(JSONObject.toJSONString(body), ContentType.create("application/json", "utf-8")));
-            CloseableHttpClient client = HttpClientBuilder.create().build();
             RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(3000).setConnectTimeout(3000).build();
             httpPost.setConfig(requestConfig);
             HttpResponse response = client.execute(httpPost);
             result = EntityUtils.toString(response.getEntity());
-            client.close();
         } catch (Exception e) {
             throw e;
         }
@@ -44,13 +42,11 @@ public class HttpUtil {
     public static String get(String url) throws Exception {
         String result = null;
         HttpGet httpGet = new HttpGet(url);
-        try {
-            CloseableHttpClient client = HttpClientBuilder.create().build();
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
             RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(3000).setConnectTimeout(3000).build();
             httpGet.setConfig(requestConfig);
             HttpResponse response = client.execute(httpGet);
             result = EntityUtils.toString(response.getEntity());
-            client.close();
         } catch (Exception e) {
             throw e;
         }
