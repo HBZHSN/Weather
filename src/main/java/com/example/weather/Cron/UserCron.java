@@ -47,7 +47,7 @@ public class UserCron {
     @Value(value = "${weather.qq}")
     private String QQ = null;
     @Value(value = "${weather.notify}")
-    private String NOTIFY = null;
+    private Long NOTIFY = null;
 
     @Autowired
     private UserService userService;
@@ -57,7 +57,8 @@ public class UserCron {
     @PostConstruct
     public void startProject() {
         try {
-            MessageUtil.sendPlain("项目启动成功", Long.valueOf(NOTIFY));
+//            MessageUtil.sendPlain("项目启动成功", Long.valueOf(NOTIFY));
+            messageService.newMessage(NOTIFY, 1, "项目启动成功");
         } catch (Exception e) {
             logger.error("sendStartMessageError", e);
         }
@@ -123,13 +124,17 @@ public class UserCron {
                     JSONArray messageChain = resultObject.getJSONArray("messageChain");
                     if (messageChain.getJSONObject(1).getString("type").equals("Plain")) {
                         String text = messageChain.getJSONObject(1).getString("text");
+                        JSONObject sender = resultObject.getJSONObject("sender");
                         if (text.startsWith("订阅天气")) {
                             String city = text.substring(5);
-                            JSONObject sender = resultObject.getJSONObject("sender");
                             logger.info(sender.toJSONString());
                             userService.newUser(sender.getString("nickname"), sender.getLong("id"), 1, city);
-                            MessageUtil.sendPlain(String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city), sender.getLong("id"));
+//                            MessageUtil.sendPlain(String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city), sender.getLong("id"));
                             messageService.newMessage(sender.getLong("id"), 1, String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city));
+                        } else {
+                            text = sender.getString("nickname") + " : " + text;
+//                            MessageUtil.sendPlain(text, Long.valueOf(NOTIFY));
+                            messageService.newMessage(NOTIFY, 1, text);
                         }
                     }
                 }

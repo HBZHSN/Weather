@@ -100,7 +100,7 @@ public class WeatherCron {
                 return;
             }
             String resultWeather = WeatherUtil.buildWeatherString(weatherJSON);
-            MessageUtil.sendPlain(resultWeather, userweather.getTarget());
+//            MessageUtil.sendPlain(resultWeather, userweather.getTarget());
             messageService.newMessage(userweather.getTarget(), userweather.getType(), resultWeather);
         }
     }
@@ -127,7 +127,7 @@ public class WeatherCron {
                         List<Long> targets = userService.getTargetsByLocate(locate);
                         for (Long target : targets) {
                             String resultString = WeatherUtil.buildWeatherWarningString(weatherWarnings);
-                            MessageUtil.sendPlain(resultString, target);
+//                            MessageUtil.sendPlain(resultString, target);
                             messageService.newMessage(target, 1, resultString);
                         }
                     }
