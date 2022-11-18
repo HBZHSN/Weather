@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +49,15 @@ public class UserCron {
     @Autowired
     private MessageService messageService;
 
+    @PostConstruct
+    public void startProject() {
+        try {
+            MessageUtil.sendPlain("项目启动成功", Long.valueOf(NOTIFY));
+        } catch (Exception e) {
+            logger.error("sendStartMessageError", e);
+        }
+    }
+
     @Scheduled(cron = "0/10 * * * * ?")
     public void dealMessage() throws Exception {
         Long countMessage = null;
@@ -61,16 +71,16 @@ public class UserCron {
                 map.put("sessionKey", session);
                 map.put("qq", QQ);
                 HttpUtil.post(DOMAIN + "/bind", map);
-                Map<String,Object> mapMessage = new HashMap<>();
-                mapMessage.put("sessionKey",session);
-                mapMessage.put("target",NOTIFY);
+                Map<String, Object> mapMessage = new HashMap<>();
+                mapMessage.put("sessionKey", session);
+                mapMessage.put("target", NOTIFY);
                 List<MessageItem> items = new ArrayList<>();
                 MessageItem item = new MessageItem();
                 item.setText("Session失效，快去看一眼！");
                 item.setType("Plain");
                 items.add(item);
-                mapMessage.put("messageChain",items);
-                HttpUtil.post(DOMAIN+"/sendFriendMessage",mapMessage);
+                mapMessage.put("messageChain", items);
+                HttpUtil.post(DOMAIN + "/sendFriendMessage", mapMessage);
                 System.exit(0);
             }
             countMessage = countResult.getLong("data");
