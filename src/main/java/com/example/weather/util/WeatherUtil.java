@@ -99,7 +99,6 @@ public class WeatherUtil {
         result.append(String.format("气温：%.0f度-%.0f度\n", temps.get(0), temps.get(23)));
         String flag = weatherHours.get(0).getText();
         String firstTime = weatherHours.get(0).getFxTime().substring(11, 16);
-        Boolean nextDay = false;
         for (int i = 0; i < weatherHours.size(); i++) {
             WeatherHour weatherHour = weatherHours.get(i);
             String time = weatherHour.getFxTime().substring(11, 16);

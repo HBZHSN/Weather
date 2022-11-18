@@ -24,6 +24,7 @@
     <select id="getUserWeather" resultType="com.example.weather.vo.UserWeather">
         SELECT *
         FROM `user_weather`
+#         WHERE `target` = 1149983457
     </select>
 
     <select id="getAllLocate" resultType="java.lang.Long">

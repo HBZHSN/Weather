@@ -1,4 +1,4 @@
-package com.example.weather.Cron;
+package com.example.weather.cron;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;

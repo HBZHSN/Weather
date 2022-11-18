@@ -1,4 +1,4 @@
-package com.example.weather.Cron;
+package com.example.weather.cron;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -52,16 +52,18 @@ public class UserCron {
     private UserService userService;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private WeatherCron weatherCron;
 
-    @PostConstruct
-    public void startProject() {
-        try {
-//            MessageUtil.sendPlain("项目启动成功", Long.valueOf(NOTIFY));
-            messageService.newMessage(NOTIFY, 1, "项目启动成功");
-        } catch (Exception e) {
-            logger.error("sendStartMessageError", e);
-        }
-    }
+//    @PostConstruct
+//    public void startProject() {
+//        try {
+////            MessageUtil.sendPlain("项目启动成功", NOTIFY);
+//            messageService.newMessage(NOTIFY, 1, "项目启动成功");
+//        } catch (Exception e) {
+//            logger.error("sendStartMessageError", e);
+//        }
+//    }
 
     @Async
     @Scheduled(cron = "0/10 * * * * ?")
@@ -130,6 +132,10 @@ public class UserCron {
                             userService.newUser(sender.getString("nickname"), sender.getLong("id"), 1, city);
 //                            MessageUtil.sendPlain(String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city), sender.getLong("id"));
                             messageService.newMessage(sender.getLong("id"), 1, String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city));
+                        }if(text.startsWith("发送天气")){
+                            if(sender.getLong("id").equals(NOTIFY)){
+                                weatherCron.sendWeather();
+                            }
                         } else {
                             text = sender.getString("nickname") + " : " + text;
 //                            MessageUtil.sendPlain(text, Long.valueOf(NOTIFY));
