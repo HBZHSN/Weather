@@ -12,8 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -28,7 +31,9 @@ import java.util.Map;
  * @author： hanxu
  * @create： 2022/11/12 15:28
  */
+@Component
 @Configuration
+@EnableAsync
 @EnableScheduling
 public class UserCron {
 
@@ -58,6 +63,7 @@ public class UserCron {
         }
     }
 
+    @Async
     @Scheduled(cron = "0/10 * * * * ?")
     public void dealMessage() throws Exception {
         Long countMessage = null;
