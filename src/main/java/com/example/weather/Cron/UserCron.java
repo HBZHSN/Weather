@@ -2,11 +2,10 @@ package com.example.weather.Cron;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.example.weather.VO.MessageItem;
+import com.example.weather.vo.MessageItem;
 import com.example.weather.service.MessageService;
 import com.example.weather.service.UserService;
 import com.example.weather.util.HttpUtil;
-import com.example.weather.util.MessageUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +65,7 @@ public class UserCron {
 
     @Async
     @Scheduled(cron = "0/10 * * * * ?")
-    public void dealMessage() throws Exception {
+    public void dealMessage() {
         Long countMessage = null;
         try {
             JSONObject countResult = JSONObject.parseObject(HttpUtil.get(DOMAIN + "/countMessage?sessionKey=" + SESSION));

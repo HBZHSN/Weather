@@ -1,6 +1,6 @@
 package com.example.weather.mapper;
 
-import com.example.weather.VO.WeatherWarning;
+import com.example.weather.vo.WeatherWarning;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

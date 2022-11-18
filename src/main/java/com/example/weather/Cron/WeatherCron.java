@@ -3,13 +3,12 @@ package com.example.weather.Cron;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.example.weather.VO.*;
+import com.example.weather.vo.*;
 import com.example.weather.service.MessageService;
 import com.example.weather.service.UserService;
 import com.example.weather.service.WeatherService;
 import com.example.weather.service.WeatherWarningService;
 import com.example.weather.util.HttpUtil;
-import com.example.weather.util.MessageUtil;
 import com.example.weather.util.WeatherUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,8 +71,8 @@ public class WeatherCron {
     }
 
     @Async
-    @Scheduled(cron = "0 5 6,21 * * ?")
-    public void getWeather() throws IOException {
+    @Scheduled(cron = "0 50 6,21 * * ?")
+    public void getWeather() {
         List<Long> locates = userService.getAllLocate();
         for (Long locate : locates) {
             List<WeatherHour> weatherHours = new ArrayList<>();
@@ -89,7 +88,7 @@ public class WeatherCron {
 
     @Async
     @Scheduled(cron = "0 0 7,22 * * ?")
-    public void sendWeather() throws IOException {
+    public void sendWeather() {
         List<UserWeather> userWeathers = userService.getUserWeather();
         for (UserWeather userweather : userWeathers) {
             String weatherJSON = null;
@@ -107,7 +106,7 @@ public class WeatherCron {
 
     @Async
     @Scheduled(cron = "0 0 6,12,18,22 * * ?")
-    public void sendWeatherWarning() throws IOException {
+    public void sendWeatherWarning() {
         List<Long> locates = userService.getAllLocate();
         for (Long locate : locates) {
             List<WeatherWarning> weatherWarnings = new ArrayList<>();

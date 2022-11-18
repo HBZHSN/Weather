@@ -1,6 +1,6 @@
 package com.example.weather.mapper;
 
-import com.example.weather.VO.UserWeather;
+import com.example.weather.vo.UserWeather;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

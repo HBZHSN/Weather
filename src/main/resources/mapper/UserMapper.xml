@@ -15,13 +15,13 @@
           AND `type` = #{type}
     </delete>
 
-    <select id="getUserWeatherById" resultType="com.example.weather.VO.UserWeather">
+    <select id="getUserWeatherById" resultType="com.example.weather.vo.UserWeather">
         SELECT *
         FROM `user_weather`
         WHERE id = #{id}
     </select>
 
-    <select id="getUserWeather" resultType="com.example.weather.VO.UserWeather">
+    <select id="getUserWeather" resultType="com.example.weather.vo.UserWeather">
         SELECT *
         FROM `user_weather`
     </select>

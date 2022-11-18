@@ -1,6 +1,6 @@
 package com.example.weather.mapper;
 
-import com.example.weather.VO.LocateWeather;
+import com.example.weather.vo.LocateWeather;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.sql.Timestamp;

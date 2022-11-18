@@ -1,8 +1,7 @@
 package com.example.weather.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.example.weather.Cron.WeatherCron;
-import com.example.weather.VO.UserWeather;
+import com.example.weather.vo.UserWeather;
 import com.example.weather.mapper.UserMapper;
 import com.example.weather.util.HttpUtil;
 import org.slf4j.Logger;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 
 /**

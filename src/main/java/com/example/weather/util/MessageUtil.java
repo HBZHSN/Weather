@@ -1,8 +1,7 @@
 package com.example.weather.util;
 
-import com.example.weather.Cron.UserCron;
-import com.example.weather.VO.Message;
-import com.example.weather.VO.MessageItem;
+import com.example.weather.vo.Message;
+import com.example.weather.vo.MessageItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,12 +28,12 @@ public class MessageUtil {
 
     @Value(value = "${weather.session}")
     public void setSESSION(String SESSION) {
-        this.SESSION = SESSION;
+        MessageUtil.SESSION = SESSION;
     }
 
     @Value(value = "${weather.domain}")
     public void setDOMAIN(String DOMAIN) {
-        this.DOMAIN = DOMAIN;
+        MessageUtil.DOMAIN = DOMAIN;
     }
 
     public static void sendPlain(String text, Long target) throws IOException {

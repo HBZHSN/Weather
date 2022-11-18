@@ -1,8 +1,8 @@
 package com.example.weather.util;
 
 import com.alibaba.fastjson.JSONArray;
-import com.example.weather.VO.WeatherHour;
-import com.example.weather.VO.WeatherWarning;
+import com.example.weather.vo.WeatherHour;
+import com.example.weather.vo.WeatherWarning;
 
 import java.util.*;
 import java.util.stream.Collectors;

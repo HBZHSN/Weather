@@ -1,4 +1,4 @@
-package com.example.weather.VO;
+package com.example.weather.vo;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;

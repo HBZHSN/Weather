@@ -1,10 +1,7 @@
 package com.example.weather.mapper;
 
-import com.example.weather.VO.Message;
-import com.example.weather.VO.MessageLog;
+import com.example.weather.vo.MessageLog;
 import org.apache.ibatis.annotations.Mapper;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

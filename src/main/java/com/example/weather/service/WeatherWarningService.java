@@ -1,11 +1,9 @@
 package com.example.weather.service;
 
-import com.example.weather.VO.WeatherWarning;
+import com.example.weather.vo.WeatherWarning;
 import com.example.weather.mapper.WeatherWarningMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

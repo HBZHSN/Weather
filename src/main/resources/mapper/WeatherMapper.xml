@@ -8,7 +8,7 @@
         values (#{locate}, #{weather})
     </insert>
 
-    <select id="getTodayWeatherByLocate" resultType="com.example.weather.VO.LocateWeather">
+    <select id="getTodayWeatherByLocate" resultType="com.example.weather.vo.LocateWeather">
         SELECT *
         FROM `locate_weather`
         WHERE `locate` = #{locate}

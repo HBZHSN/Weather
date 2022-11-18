@@ -1,8 +1,6 @@
 package com.example.weather.service;
 
-import com.example.weather.Cron.WeatherCron;
-import com.example.weather.VO.Message;
-import com.example.weather.VO.MessageLog;
+import com.example.weather.vo.MessageLog;
 import com.example.weather.mapper.MessageMapper;
 import com.example.weather.util.MessageUtil;
 import org.slf4j.Logger;
