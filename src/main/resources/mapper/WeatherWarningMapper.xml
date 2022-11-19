@@ -21,7 +21,6 @@
         SELECT *
         FROM `locate_weather_warning`
         WHERE `id` = #{id}
-          AND `sendstatus` = 0
     </select>
 
 
