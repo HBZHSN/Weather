@@ -105,7 +105,7 @@ public class WeatherCron {
     }
 
     @Async
-    @Scheduled(cron = "0 0 6,12,18,22 * * ?")
+    @Scheduled(cron = "0 0 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22 * * ?")
     public void sendWeatherWarning() {
         List<Long> locates = userService.getAllLocate();
         for (Long locate : locates) {
