@@ -36,4 +36,18 @@ public class MessageService {
         }
         return messageMapper.newMessage(messageLog);
     }
+
+    public Integer newGroupMessage(Long senderId, Long groupId, String aiReply) {
+        MessageLog messageLog = new MessageLog();
+        messageLog.setTarget(senderId);
+        messageLog.setType(2);
+        messageLog.setText(aiReply);
+        messageLog.setTime(new Timestamp(System.currentTimeMillis()));
+        try {
+            MessageUtil.sendGroupPlain(senderId, groupId, aiReply);
+        } catch (Exception e) {
+            logger.error("sendGroupPlain failed", e);
+        }
+        return messageMapper.newMessage(messageLog);
+    }
 }

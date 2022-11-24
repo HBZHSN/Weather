@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -141,8 +142,7 @@ public class UserCron {
                             }
                         } else {
                             try {
-                                JSONObject aiResult = JSONObject.parseObject(HttpUtil.get("https://api.qingyunke.com/api.php?key=free&appid=0&msg=" + text));
-                                String aiReply = aiResult.getString("content");
+                                String aiReply = JSONObject.parseObject(HttpUtil.aiGet(text)).getString("content");
                                 messageService.newMessage(sender.getLong("id"), 1, aiReply);
                             } catch (Exception e) {
                                 logger.error("aiMessageError:", e);
@@ -151,6 +151,23 @@ public class UserCron {
                             text = sender.getString("nickname") + " : " + text;
 //                            MessageUtil.sendPlain(text, Long.valueOf(NOTIFY));
                             messageService.newMessage(NOTIFY, 1, text);
+                        }
+                    }
+                } else if (type.equals("GroupMessage")) {
+                    logger.info("GroupMessage" + resultObject.toJSONString());
+                    JSONObject sender = resultObject.getJSONObject("sender");
+                    Long senderId = sender.getLong("id");
+                    Long groupId = sender.getJSONObject("group").getLong("id");
+                    List<MessageItem> messageItems = JSONArray.parseArray(resultObject.getString("messageChain"), MessageItem.class);
+                    if (messageItems.stream().anyMatch(a -> a.getType().equals("At") && a.getTarget().equals(Long.parseLong(QQ)))) {
+                        try {
+                            String messages = messageItems.stream().filter(a -> a.getType().equals("Plain"))
+                                    .map(MessageItem::getText).collect(Collectors.joining(" "));
+                            String aiReply = JSONObject.parseObject(HttpUtil.aiGet(messages)).getString("content");
+                            logger.info(String.format("aiReply:message:%s,ai:%s", messages, aiReply));
+                            messageService.newGroupMessage(senderId, groupId, aiReply);
+                        } catch (Exception e) {
+                            logger.error("groupMessageError:", e);
                         }
                     }
                 }

@@ -21,9 +21,9 @@ import java.util.List;
 @Component
 public class MessageUtil {
     private static Logger logger = LoggerFactory.getLogger(MessageUtil.class);
-//    @Value(value = "${weather.session}")
+    //    @Value(value = "${weather.session}")
     private static String SESSION = null;
-//    @Value(value = "${weather.domain}")
+    //    @Value(value = "${weather.domain}")
     private static String DOMAIN = null;
 
     @Value(value = "${weather.session}")
@@ -36,7 +36,7 @@ public class MessageUtil {
         MessageUtil.DOMAIN = DOMAIN;
     }
 
-    public static void sendPlain(String text, Long target) throws IOException {
+    public static void sendPlain(String text, Long target) {
         List<MessageItem> items = new ArrayList<>();
         MessageItem item = new MessageItem();
         item.setType("Plain");
@@ -56,5 +56,33 @@ public class MessageUtil {
             return;
         }
         logger.info("SentFriendMessage: " + postResult + "text:" + text);
+    }
+
+    public static void sendGroupPlain(Long senderId, Long groupId, String aiReply) {
+        List<MessageItem> items = new ArrayList<>();
+        MessageItem atItem = new MessageItem();
+        atItem.setType("At");
+        atItem.setTarget(senderId);
+
+        MessageItem messageItem = new MessageItem();
+        messageItem.setType("Plain");
+        messageItem.setText(" " + aiReply);
+
+        items.add(atItem);
+        items.add(messageItem);
+
+        Message msg = new Message();
+        msg.setTarget(groupId);
+        msg.setSessionKey(SESSION);
+        msg.setMessageChain(items);
+
+        String postResult = null;
+        try {
+            postResult = HttpUtil.post(DOMAIN + "/sendGroupMessage", msg);
+        } catch (Exception e) {
+            logger.error("Failed to send Group message", e);
+            return;
+        }
+        logger.info("SentGroupMessage: " + postResult + "text:" + aiReply);
     }
 }

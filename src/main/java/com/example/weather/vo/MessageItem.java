@@ -13,4 +13,7 @@ import lombok.Data;
 public class MessageItem {
     String type;
     String text;
+    Long id;
+    Long time;
+    Long target;
 }

@@ -14,6 +14,8 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Created with IntelliJ IDEA.
@@ -50,6 +52,15 @@ public class HttpUtil {
         } catch (Exception e) {
             throw e;
         }
+        return result;
+    }
+
+    public static String aiGet(String text) throws Exception {
+//        text = new String(text.getBytes("iso8859-1"), StandardCharsets.UTF_8);
+        URL url = new URL("https://api.qingyunke.com/api.php?key=free&appid=0&msg=" + text);
+        URI uri = new URI(url.getProtocol(), url.getHost(), url.getPath(), url.getQuery(), null);
+        String result = get(uri.toString());
+        result = result.replace("{br}", "\n");
         return result;
     }
 }
