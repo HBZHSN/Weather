@@ -1,5 +1,6 @@
 package com.example.weather.cron;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.weather.vo.MessageItem;
@@ -71,7 +72,8 @@ public class UserCron {
         Long countMessage = null;
         try {
             JSONObject countResult = JSONObject.parseObject(HttpUtil.get(DOMAIN + "/countMessage?sessionKey=" + SESSION));
-            if (countResult.getInteger("code") == 3) {//session失效，临时用一个session发消息
+            //session失效，临时用一个session发消息
+            if (countResult.getInteger("code") == 3) {
                 Map<String, String> map = new HashMap<>();
                 map.put("verifyKey", VERIFY_KEY);
                 String session = JSONObject.parseObject(HttpUtil.post(DOMAIN + "/verify", map)).getString("session");
@@ -132,11 +134,20 @@ public class UserCron {
                             userService.newUser(sender.getString("nickname"), sender.getLong("id"), 1, city);
 //                            MessageUtil.sendPlain(String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city), sender.getLong("id"));
                             messageService.newMessage(sender.getLong("id"), 1, String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city));
-                        }if(text.startsWith("发送天气")){
-                            if(sender.getLong("id").equals(NOTIFY)){
+                        }
+                        if (text.startsWith("发送天气")) {
+                            if (sender.getLong("id").equals(NOTIFY)) {
                                 weatherCron.sendWeather();
                             }
                         } else {
+                            try {
+                                JSONObject aiResult = JSONObject.parseObject(HttpUtil.get("https://api.qingyunke.com/api.php?key=free&appid=0&msg=" + text));
+                                String aiReply = aiResult.getString("content");
+                                messageService.newMessage(sender.getLong("id"), 1, aiReply);
+                            } catch (Exception e) {
+                                logger.error("aiMessageError:", e);
+                                return;
+                            }
                             text = sender.getString("nickname") + " : " + text;
 //                            MessageUtil.sendPlain(text, Long.valueOf(NOTIFY));
                             messageService.newMessage(NOTIFY, 1, text);
