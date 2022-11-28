@@ -33,6 +33,7 @@ public class MessageService {
             MessageUtil.sendPlain(text, target);
         } catch (Exception e) {
             logger.error("sendPlain failed", e);
+            return 0;
         }
         return messageMapper.newMessage(messageLog);
     }
@@ -47,6 +48,7 @@ public class MessageService {
             MessageUtil.sendGroupPlain(senderId, groupId, aiReply);
         } catch (Exception e) {
             logger.error("sendGroupPlain failed", e);
+            return 0;
         }
         return messageMapper.newMessage(messageLog);
     }

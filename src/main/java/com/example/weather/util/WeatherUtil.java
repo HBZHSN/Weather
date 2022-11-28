@@ -121,10 +121,11 @@ public class WeatherUtil {
     }
 
     public static String buildWeatherWarningString(List<WeatherWarning> weatherWarnings) {
-        StringBuilder result = new StringBuilder("———天气预警信息———");
+        StringBuilder result = new StringBuilder("———天气预警信息———\n");
         for (WeatherWarning weatherWarn : weatherWarnings) {
-            result.append("\n").append(weatherWarn.getText()).append("\nhttps://www.qweather.com/severe-weather/").append(weatherWarn.getLocate()).append(".html");
+            result.append("⭐").append(weatherWarn.getTitle()).append("\n");
         }
+        result.append("查看详情：").append("https://www.qweather.com/severe-weather/").append(weatherWarnings.get(0).getLocate()).append(".html");
         return result.toString();
     }
 

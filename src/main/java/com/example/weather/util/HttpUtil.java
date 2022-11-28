@@ -31,7 +31,7 @@ public class HttpUtil {
         try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
             httpPost.setURI(URI.create(url));
             httpPost.setEntity(new StringEntity(JSONObject.toJSONString(body), ContentType.create("application/json", "utf-8")));
-            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(3000).setConnectTimeout(3000).build();
+            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build();
             httpPost.setConfig(requestConfig);
             HttpResponse response = client.execute(httpPost);
             result = EntityUtils.toString(response.getEntity());
@@ -45,7 +45,7 @@ public class HttpUtil {
         String result = null;
         HttpGet httpGet = new HttpGet(url);
         try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
-            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(3000).setConnectTimeout(3000).build();
+            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build();
             httpGet.setConfig(requestConfig);
             HttpResponse response = client.execute(httpGet);
             result = EntityUtils.toString(response.getEntity());
@@ -55,9 +55,9 @@ public class HttpUtil {
         return result;
     }
 
-    public static String aiGet(String text) throws Exception {
+    public static String aiGet(String urlBefore) throws Exception {
 //        text = new String(text.getBytes("iso8859-1"), StandardCharsets.UTF_8);
-        URL url = new URL("https://api.qingyunke.com/api.php?key=free&appid=0&msg=" + text);
+        URL url = new URL(urlBefore);
         URI uri = new URI(url.getProtocol(), url.getHost(), url.getPath(), url.getQuery(), null);
         String result = get(uri.toString());
         result = result.replace("{br}", "\n");

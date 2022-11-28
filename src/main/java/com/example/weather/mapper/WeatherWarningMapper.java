@@ -3,6 +3,9 @@ package com.example.weather.mapper;
 import com.example.weather.vo.WeatherWarning;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -17,4 +20,6 @@ public interface WeatherWarningMapper {
     WeatherWarning getWeatherWarningById(String id);
 
     Integer updateWeatherWarning(String id);
+
+    List<WeatherWarning> getTodayWeatherWarningByLocate(Long locate, Timestamp time);
 }

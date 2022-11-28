@@ -49,6 +49,8 @@ public class UserCron {
     private String QQ = null;
     @Value(value = "${weather.notify}")
     private Long NOTIFY = null;
+    @Value(value = "${weather.appid}")
+    private String APP_ID = null;
 
     @Autowired
     private UserService userService;
@@ -142,7 +144,9 @@ public class UserCron {
                             }
                         } else {
                             try {
-                                String aiReply = JSONObject.parseObject(HttpUtil.aiGet(text)).getString("content");
+                                String aiReply = JSONObject.parseObject(HttpUtil.aiGet(
+                                        String.format("https://api.ownthink.com/bot?appid=%s&userid=%s&spoken=%s", APP_ID, sender.getString("nickname"), text)))
+                                        .getJSONObject("data").getJSONObject("info").getString("text");
                                 messageService.newMessage(sender.getLong("id"), 1, aiReply);
                             } catch (Exception e) {
                                 logger.error("aiMessageError:", e);
@@ -163,7 +167,9 @@ public class UserCron {
                         try {
                             String messages = messageItems.stream().filter(a -> a.getType().equals("Plain"))
                                     .map(MessageItem::getText).collect(Collectors.joining(" "));
-                            String aiReply = JSONObject.parseObject(HttpUtil.aiGet(messages)).getString("content");
+                            String aiReply = JSONObject.parseObject(HttpUtil.aiGet(
+                                    String.format("https://api.ownthink.com/bot?appid=%s&userid=%s&spoken=%s", APP_ID, sender.getString("nickname"), messages)))
+                                    .getJSONObject("data").getJSONObject("info").getString("text");
                             logger.info(String.format("aiReply:message:%s,ai:%s", messages, aiReply));
                             messageService.newGroupMessage(senderId, groupId, aiReply);
                         } catch (Exception e) {

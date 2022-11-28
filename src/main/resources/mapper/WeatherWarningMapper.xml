@@ -23,5 +23,11 @@
         WHERE `id` = #{id}
     </select>
 
+    <select id="getTodayWeatherWarningByLocate" resultType="com.example.weather.vo.WeatherWarning">
+        SELECT * FROM locate_weather_warning
+        WHERE `locate` = #{locate}
+          AND `time` <![CDATA[>=]]> #{time}
+    </select>
+
 
 </mapper>

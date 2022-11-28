@@ -105,8 +105,8 @@ public class WeatherCron {
     }
 
     @Async
-    @Scheduled(cron = "0 0 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22 * * ?")
-    public void sendWeatherWarning() {
+    @Scheduled(cron = "0 55 5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21 * * ?")
+    public void saveWeatherWarning() {
         List<Long> locates = userService.getAllLocate();
         for (Long locate : locates) {
             List<WeatherWarning> weatherWarnings = new ArrayList<>();
@@ -116,6 +116,22 @@ public class WeatherCron {
                 logger.error("getNowWeatherWarningError", e);
                 return;
             }
+            for (WeatherWarning weatherWarning : weatherWarnings) {
+                if (weatherWarning.getId() != null) {
+                    weatherWarning.setLocate(locate);
+                    weatherWarning.setSendStatus(0);
+                    weatherWarningService.newWeatherWarning(weatherWarning);
+                }
+            }
+        }
+    }
+
+    @Async
+    @Scheduled(cron = "0 0 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22 * * ?")
+    public void sendWeatherWarning() {
+        List<Long> locates = userService.getAllLocate();
+        for (Long locate : locates) {
+            List<WeatherWarning> weatherWarnings = weatherWarningService.getTodayWeatherWarningByLocate(locate);
             for (WeatherWarning weatherWarning : weatherWarnings) {
                 if (weatherWarning.getId() != null) {
                     weatherWarning.setLocate(locate);
@@ -136,9 +152,9 @@ public class WeatherCron {
     }
 
 //    @Async
-//    @Scheduled(cron = "0/1 * * * * ? ")
+//    @Scheduled(cron = "0/10 * * * * ? ")
 //    public void test() throws IOException {
-//        MessageUtil.sendPlain(String.format("线程：%s\n时间：%s",Thread.currentThread().getName(),System.currentTimeMillis()),1149983457L);
+//        messageService.newMessage(1149983457L,1,WeatherUtil.buildWeatherWarningString(weatherWarningService.getTodayWeatherWarningByLocate(101210111L)));
 //    }
 
     public static void main(String[] args) throws IOException {
