@@ -39,8 +39,8 @@ public class WeatherWarningService {
         WeatherWarning warning = getWeatherWarningById(weatherWarning.getId());
         if (warning == null) {
             List<WeatherWarning> todayWarning = getTodayWeatherWarningByLocate(weatherWarning.getLocate());
-            for(WeatherWarning today : todayWarning){//相同的预警类型一天只发一次
-                if(Objects.equals(today.getType(), weatherWarning.getType())){
+            for (WeatherWarning today : todayWarning) {//相同的预警类型一天只发一次
+                if (Objects.equals(today.getType(), weatherWarning.getType())) {
                     return 0;
                 }
             }
@@ -58,10 +58,10 @@ public class WeatherWarningService {
         return weatherWarningMapper.updateWeatherWarning(id);
     }
 
-    public List<WeatherWarning> getTodayWeatherWarningByLocate(Long locate){
+    public List<WeatherWarning> getTodayWeatherWarningByLocate(Long locate) {
         Timestamp time = new Timestamp(System.currentTimeMillis() - 1000 * 60 * 30);
         List<WeatherWarning> weatherWarnings = weatherWarningMapper.getTodayWeatherWarningByLocate(locate, time);
-        if (weatherWarnings == null) { //如果少了信息，就再去查一遍
+        if (weatherWarnings.size() == 0) { //如果少了信息，就再去查一遍
             time = new Timestamp(System.currentTimeMillis());
             logger.info("数据库中无数据，补偿一次查询");
             List<WeatherWarning> weatherWarningList = new ArrayList<>();
@@ -69,8 +69,8 @@ public class WeatherWarningService {
                 String result = HttpUtil.get(String.format("https://devapi.qweather.com/v7/warning/now?key=%s&location=%s", KEY, locate));
                 logger.info(String.format("getNowWeatherWarning:locate:%d,result:%s", locate, result));
                 weatherWarningList = JSONArray.parseArray(JSONObject.parseObject(result).getString("warning"), WeatherWarning.class);
-            }catch (Exception e){
-                logger.error("getNowWeatherWarningError:",e);
+            } catch (Exception e) {
+                logger.error("getNowWeatherWarningError:", e);
             }
             for (WeatherWarning weatherWarning : weatherWarningList) {
                 newWeatherWarning(weatherWarning);

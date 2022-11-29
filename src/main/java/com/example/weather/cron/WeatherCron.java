@@ -129,27 +129,24 @@ public class WeatherCron {
     @Async
     @Scheduled(cron = "0 0 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22 * * ?")
     public void sendWeatherWarning() {
+        logger.info("startSendWeatherWarning");
         List<Long> locates = userService.getAllLocate();
         for (Long locate : locates) {
             List<WeatherWarning> weatherWarnings = weatherWarningService.getTodayWeatherWarningByLocate(locate);
+            logger.info(JSON.toJSONString(weatherWarnings));
             for (WeatherWarning weatherWarning : weatherWarnings) {
-                if (weatherWarning.getId() != null) {
-                    weatherWarning.setLocate(locate);
-                    weatherWarning.setSendStatus(0);
-                    if (weatherWarningService.newWeatherWarning(weatherWarning) == 1) {
-                        weatherWarningService.updateWeatherWarning(weatherWarning.getId());
-                        logger.info(JSON.toJSONString(weatherWarnings));
-                        List<Long> targets = userService.getTargetsByLocate(locate);
-                        for (Long target : targets) {
-                            String resultString = WeatherUtil.buildWeatherWarningString(weatherWarnings);
-//                            MessageUtil.sendPlain(resultString, target);
-                            messageService.newMessage(target, 1, resultString);
-                        }
-                    }
+                List<Long> targets = userService.getTargetsByLocate(locate);
+                for (Long target : targets) {
+                    String resultString = WeatherUtil.buildWeatherWarningString(weatherWarnings);
+                    logger.info(resultString);
+                    messageService.newMessage(target, 1, resultString);
                 }
+//                weatherWarning.setSendStatus(1);
+//                weatherWarningService.updateWeatherWarning(weatherWarning.getId());
             }
         }
     }
+
 
 //    @Async
 //    @Scheduled(cron = "0/10 * * * * ? ")
