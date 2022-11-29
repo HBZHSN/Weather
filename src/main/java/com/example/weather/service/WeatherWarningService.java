@@ -38,7 +38,7 @@ public class WeatherWarningService {
     public Integer newWeatherWarning(WeatherWarning weatherWarning) {
         WeatherWarning warning = getWeatherWarningById(weatherWarning.getId());
         if (warning == null) {
-            List<WeatherWarning> todayWarning = getTodayWeatherWarningByLocate(warning.getLocate());
+            List<WeatherWarning> todayWarning = getTodayWeatherWarningByLocate(weatherWarning.getLocate());
             for(WeatherWarning today : todayWarning){//相同的预警类型一天只发一次
                 if(Objects.equals(today.getType(), weatherWarning.getType())){
                     return 0;
