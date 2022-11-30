@@ -1,6 +1,5 @@
 package com.example.weather.cron;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.weather.vo.MessageItem;
@@ -18,7 +17,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -136,7 +134,7 @@ public class UserCron {
                             logger.info(sender.toJSONString());
                             userService.newUser(sender.getString("nickname"), sender.getLong("id"), 1, city);
 //                            MessageUtil.sendPlain(String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city), sender.getLong("id"));
-                            messageService.newMessage(sender.getLong("id"), 1, String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city));
+                            messageService.newMessage(sender.getLong("id"), String.format("订阅成功，机器人将在每天7、22时自动发送%s天气", city));
                         }
                         if (text.startsWith("发送天气")) {
                             if (sender.getLong("id").equals(NOTIFY)) {
@@ -147,14 +145,14 @@ public class UserCron {
                                 String aiReply = JSONObject.parseObject(HttpUtil.aiGet(
                                         String.format("https://api.ownthink.com/bot?appid=%s&userid=%s&spoken=%s", APP_ID, sender.getString("nickname"), text)))
                                         .getJSONObject("data").getJSONObject("info").getString("text");
-                                messageService.newMessage(sender.getLong("id"), 1, aiReply);
+                                messageService.newMessage(sender.getLong("id"), aiReply);
                             } catch (Exception e) {
                                 logger.error("aiMessageError:", e);
                                 return;
                             }
                             text = sender.getString("nickname") + " : " + text;
 //                            MessageUtil.sendPlain(text, Long.valueOf(NOTIFY));
-                            messageService.newMessage(NOTIFY, 1, text);
+                            messageService.newMessage(NOTIFY, text);
                         }
                     }
                 } else if (type.equals("GroupMessage")) {

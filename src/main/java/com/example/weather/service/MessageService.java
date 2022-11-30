@@ -23,10 +23,10 @@ public class MessageService {
     @Autowired
     private MessageMapper messageMapper;
 
-    public Integer newMessage(Long target, Integer type, String text) {
+    public Integer newMessage(Long target, String text) {
         MessageLog messageLog = new MessageLog();
         messageLog.setTarget(target);
-        messageLog.setType(type);
+        messageLog.setType(1);
         messageLog.setText(text);
         messageLog.setTime(new Timestamp(System.currentTimeMillis()));
         try {

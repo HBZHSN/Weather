@@ -121,6 +121,7 @@ public class WeatherUtil {
     }
 
     public static String buildWeatherWarningString(List<WeatherWarning> weatherWarnings) {
+        if (weatherWarnings.size() == 0) return null;
         StringBuilder result = new StringBuilder("———天气预警信息———\n");
         for (WeatherWarning weatherWarn : weatherWarnings) {
             result.append("⭐").append(weatherWarn.getTitle()).append("\n");

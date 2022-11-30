@@ -100,13 +100,13 @@ public class WeatherCron {
             }
             String resultWeather = WeatherUtil.buildWeatherString(weatherJSON);
 //            MessageUtil.sendPlain(resultWeather, userweather.getTarget());
-            messageService.newMessage(userweather.getTarget(), userweather.getType(), resultWeather);
+            messageService.newMessage(userweather.getTarget(), resultWeather);
         }
     }
 
     @Async
-    @Scheduled(cron = "0 55 5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21 * * ?")
-    public void saveWeatherWarning() {
+    @Scheduled(cron = "0 0 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22 * * ?")
+    public void sendWeatherWarning() {
         List<Long> locates = userService.getAllLocate();
         for (Long locate : locates) {
             List<WeatherWarning> weatherWarnings = new ArrayList<>();
@@ -116,43 +116,48 @@ public class WeatherCron {
                 logger.error("getNowWeatherWarningError", e);
                 return;
             }
+            List<WeatherWarning> sendWarning = new ArrayList<>();
             for (WeatherWarning weatherWarning : weatherWarnings) {
-                if (weatherWarning.getId() != null) {
-                    weatherWarning.setLocate(locate);
-                    weatherWarning.setSendStatus(0);
-                    weatherWarningService.newWeatherWarning(weatherWarning);
+                weatherWarning.setLocate(locate);
+                weatherWarning.setSendStatus(0);
+                if (weatherWarningService.newWeatherWarning(weatherWarning) == 0) {
+                    logger.info("已发送，今日不再发送" + weatherWarning.toString());
+                } else {
+                    sendWarning.add(weatherWarning);
+                    weatherWarningService.updateWeatherWarning(weatherWarning.getId());
                 }
+            }
+            String resultString = WeatherUtil.buildWeatherWarningString(sendWarning);
+            if(resultString == null) continue;
+            logger.info(resultString);
+            List<Long> targets = userService.getTargetsByLocate(locate);
+            for (Long target : targets) {
+                messageService.newMessage(target, resultString);
             }
         }
     }
-
-    @Async
-    @Scheduled(cron = "0 0 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22 * * ?")
-    public void sendWeatherWarning() {
-        logger.info("startSendWeatherWarning");
-        List<Long> locates = userService.getAllLocate();
-        for (Long locate : locates) {
-            List<WeatherWarning> weatherWarnings = weatherWarningService.getTodayWeatherWarningByLocate(locate);
-            logger.info(JSON.toJSONString(weatherWarnings));
-            for (WeatherWarning weatherWarning : weatherWarnings) {
-                List<Long> targets = userService.getTargetsByLocate(locate);
-                for (Long target : targets) {
-                    String resultString = WeatherUtil.buildWeatherWarningString(weatherWarnings);
-                    logger.info(resultString);
-                    messageService.newMessage(target, 1, resultString);
-                }
-//                weatherWarning.setSendStatus(1);
-//                weatherWarningService.updateWeatherWarning(weatherWarning.getId());
-            }
-        }
-    }
-
 
 //    @Async
-//    @Scheduled(cron = "0/10 * * * * ? ")
-//    public void test() throws IOException {
-//        messageService.newMessage(1149983457L,1,WeatherUtil.buildWeatherWarningString(weatherWarningService.getTodayWeatherWarningByLocate(101210111L)));
+//    @Scheduled(cron = "0 0 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22 * * ?")
+//    public void sendWeatherWarning() {
+//        logger.info("startSendWeatherWarning");
+//        List<Long> locates = userService.getAllLocate();
+//        for (Long locate : locates) {
+//            List<WeatherWarning> weatherWarnings = weatherWarningService.getTodayWeatherWarningByLocate(locate);
+//            logger.info(JSON.toJSONString(weatherWarnings));
+//            for (WeatherWarning weatherWarning : weatherWarnings) {
+//                List<Long> targets = userService.getTargetsByLocate(locate);
+//                for (Long target : targets) {
+//                    String resultString = WeatherUtil.buildWeatherWarningString(weatherWarnings);
+//                    logger.info(resultString);
+//                    messageService.newMessage(target, 1, resultString);
+//                }
+////                weatherWarning.setSendStatus(1);
+////                weatherWarningService.updateWeatherWarning(weatherWarning.getId());
+//            }
+//        }
 //    }
+
 
     public static void main(String[] args) throws IOException {
     }

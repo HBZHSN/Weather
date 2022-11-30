@@ -1,18 +1,12 @@
 package com.example.weather.cron;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.example.weather.service.MessageService;
-import com.example.weather.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,7 +52,7 @@ public class Runner implements CommandLineRunner {
 //            for (int i = 0; i < idGroupJSON.size(); i++) {
 //                ids.add(idGroupJSON.getJSONObject(i).getLong("id"));
 //            }
-            messageService.newMessage(NOTIFY, 1, "项目启动成功");
+            messageService.newMessage(NOTIFY, "项目启动成功");
         } catch (Exception e) {
             logger.error("sendStartMessageError", e);
         }

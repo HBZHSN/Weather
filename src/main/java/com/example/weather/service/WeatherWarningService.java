@@ -38,6 +38,7 @@ public class WeatherWarningService {
     public Integer newWeatherWarning(WeatherWarning weatherWarning) {
         WeatherWarning warning = getWeatherWarningById(weatherWarning.getId());
         if (warning == null) {
+            logger.info(weatherWarning.toString());
             List<WeatherWarning> todayWarning = getTodayWeatherWarningByLocate(weatherWarning.getLocate());
             for (WeatherWarning today : todayWarning) {//相同的预警类型一天只发一次
                 if (Objects.equals(today.getType(), weatherWarning.getType())) {
@@ -59,24 +60,13 @@ public class WeatherWarningService {
     }
 
     public List<WeatherWarning> getTodayWeatherWarningByLocate(Long locate) {
-        Timestamp time = new Timestamp(System.currentTimeMillis() - 1000 * 60 * 30);
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        Timestamp time = new Timestamp(c.getTimeInMillis());
         List<WeatherWarning> weatherWarnings = weatherWarningMapper.getTodayWeatherWarningByLocate(locate, time);
-        if (weatherWarnings.size() == 0) { //如果少了信息，就再去查一遍
-            time = new Timestamp(System.currentTimeMillis());
-            logger.info("数据库中无数据，补偿一次查询");
-            List<WeatherWarning> weatherWarningList = new ArrayList<>();
-            try {
-                String result = HttpUtil.get(String.format("https://devapi.qweather.com/v7/warning/now?key=%s&location=%s", KEY, locate));
-                logger.info(String.format("getNowWeatherWarning:locate:%d,result:%s", locate, result));
-                weatherWarningList = JSONArray.parseArray(JSONObject.parseObject(result).getString("warning"), WeatherWarning.class);
-            } catch (Exception e) {
-                logger.error("getNowWeatherWarningError:", e);
-            }
-            for (WeatherWarning weatherWarning : weatherWarningList) {
-                newWeatherWarning(weatherWarning);
-            }
-            weatherWarnings = weatherWarningMapper.getTodayWeatherWarningByLocate(locate, time);
-        }
         return weatherWarnings;
     }
 }
